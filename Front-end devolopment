@@ -1,0 +1,33 @@
+import tkinter as tk
+from tkinter import messagebox
+
+def add_task():
+    task = task_entry.get()
+    if task != "":
+        tasks_listbox.insert(tk.END, task)
+        task_entry.delete(0, tk.END)
+    else:
+        messagebox.showwarning("Warning", "Please enter a task.")
+
+def delete_task():
+    try:
+        tasks_listbox.delete(tasks_listbox.curselection())
+    except:
+        messagebox.showwarning("Warning", "Please select a task to delete.")
+
+app = tk.Tk()
+app.title('To-Do List')
+
+task_entry = tk.Entry(app)
+task_entry.pack()
+
+add_task_btn = tk.Button(app, text="Add Task", command=add_task)
+add_task_btn.pack()
+
+delete_task_btn = tk.Button(app, text="Delete Selected Task", command=delete_task)
+delete_task_btn.pack()
+
+tasks_listbox = tk.Listbox(app)
+tasks_listbox.pack()
+
+app.mainloop()
