@@ -53,16 +53,16 @@ def toggle_complete():
 def update_task_list():
     listbox_tasks.delete(0, tk.END)
     for task in tasks:
-        status = "✔" if task["completed"] else "❌"
+        status = "✔" if task["completed"] else "✖️"
         due_date = task["due_date"] if task["due_date"] else "No due date"
         listbox_tasks.insert(tk.END, f"{status} {task['name']} - Due: {due_date}")
 
-# Create the main window
-root = tk.Tk()
-root.title("To do list App")
 
-# Create GUI elements
-label_title = tk.Label(root, text="Task Management", font=("Helvetica", 16))
+root = tk.Tk()
+root.title("To Do List App")
+
+#GUI elements
+label_title = tk.Label(root, text="To Do List", font=("Helvetica", 16))
 label_title.pack(pady=10)
 
 entry_task = tk.Entry(root, width=50)
@@ -80,11 +80,10 @@ btn_edit_task.pack()
 btn_delete_task = tk.Button(root, text="Delete Task", width=20, command=delete_task)
 btn_delete_task.pack()
 
-btn_toggle_complete = tk.Button(root, text="Toggle Complete", width=20, command=toggle_complete)
-btn_toggle_complete.pack()
+btn_complete = tk.Button(root, text="Complete", width=20, command=toggle_complete)
+btn_complete.pack()
 
 listbox_tasks = tk.Listbox(root, width=50)
 listbox_tasks.pack(pady=10)
 
-# Run the application
 root.mainloop()
