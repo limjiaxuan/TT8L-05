@@ -103,7 +103,13 @@ class TaskApp:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("To Do List")
-    root.geometry("800x500")  
+    root.geometry("800x700")
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    x = (screen_width/2) - (1000/2)
+    y = (screen_height/2) - (800/2)
+    root.geometry(f'+{int(x)}+{int(y)}')
+    
 
     app = TaskApp(root)
 
