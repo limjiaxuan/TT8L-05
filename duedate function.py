@@ -53,7 +53,7 @@ class TaskApp:
     def show_calendar(self):
         calendar_window = Toplevel(self.master)
         calendar_window.title("Select a Date and Time")
-        calendar_window.grab_set()  # Focus on this window
+        calendar_window.grab_set() 
         calendar = Calendar(calendar_window, selectmode='day')
         calendar.pack(pady=20)
 
