@@ -441,7 +441,7 @@ root.mainloop()
         menu.post(event.x_root, event.y_root)
 
     def edit_task(self, task_frame):
-        task_label = task_frame.winfo_children()[1]  # 获取标签组件
+        task_label = task_frame.winfo_children()[1]  
         current_text = task_label.cget("text")
 
         edit_window = tk.Toplevel(self.master)
@@ -456,9 +456,9 @@ root.mainloop()
 
     def save_task(self, task_frame, edit_window, edit_entry):
         new_text = edit_entry.get()
-        task_label = task_frame.winfo_children()[1]  # 获取标签组件
+        task_label = task_frame.winfo_children()[1]  
         task_label.config(text=new_text)
-        edit_window.destroy()  # 保存后关闭编辑窗口
+        edit_window.destroy()  # Close the editing window after saving
 
     def delete_task(self, task_frame):
         task_frame.destroy()
@@ -481,7 +481,7 @@ root.mainloop()
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("To Do List & Calendar")
+    root.title("To Do List")
     root.geometry("800x600")
 
     app = TaskApp(root)
