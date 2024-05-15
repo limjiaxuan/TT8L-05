@@ -2,6 +2,9 @@ import tkinter as tk
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1448f9f (add calendar to view task)
 from tkinter import ttk
 import calendar
 from datetime import datetime
@@ -10,6 +13,7 @@ class TaskApp:
     def __init__(self, master):
         self.master = master
         self.tasks = []
+<<<<<<< HEAD
         self.current_year = datetime.now().year
         self.current_month = datetime.now().month
 
@@ -311,6 +315,8 @@ class TaskApp:
     def __init__(self, master):
         self.master = master
         self.tasks = []
+=======
+>>>>>>> 1448f9f (add calendar to view task)
         self.create_widgets()
 
     def create_widgets(self):
@@ -419,9 +425,12 @@ class TaskApp:
             dots_label.bind("<Button-1>", lambda event, frame=task_frame: self.show_popup_menu(event, frame))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 root.mainloop()
 >>>>>>> 0575657 (modify GUI element)
 =======
+=======
+>>>>>>> 1448f9f (add calendar to view task)
             self.tasks.append({"text": task_text, "frame": task_frame, "check": task_check})
             self.task_entry.delete(0, tk.END)
 
@@ -487,4 +496,7 @@ if __name__ == "__main__":
     app = TaskApp(root)
 
     root.mainloop()
+<<<<<<< HEAD
 >>>>>>> 215b430 (Add sidebar, edit and delete)
+=======
+>>>>>>> 1448f9f (add calendar to view task)
