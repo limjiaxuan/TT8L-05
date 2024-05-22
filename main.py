@@ -4,10 +4,13 @@ import tkinter as tk
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1448f9f (add calendar to view task)
 =======
 >>>>>>> 87a4ce3 (Add files via upload)
+=======
+>>>>>>> 3dc4cdd (Add pop up menu)
 from tkinter import ttk
 import calendar
 from datetime import datetime
@@ -508,92 +511,187 @@ if __name__ == "__main__":
 =======
 from tkinter import messagebox
 from datetime import datetime, timedelta
+=======
+from tkinter import ttk
+import calendar
+from datetime import datetime
+>>>>>>> 0f73fac (Add pop up menu)
 
-tasks = []
+class TaskApp:
+    def __init__(self, master):
+        self.master = master
+        self.tasks = []
+        self.current_year = datetime.now().year
+        self.current_month = datetime.now().month
 
-def add_task():
-    task_name = entry_task.get()
-    due_date = entry_due_date.get()
-    if task_name:
-        task = {"name": task_name, "due_date": due_date, "completed": False}
-        tasks.append(task)
-        update_task_list()
-        entry_task.delete(0, tk.END)
-        entry_due_date.delete(0, tk.END)
-    else:
-        messagebox.showwarning("Warning", "Please enter a task name.")
+        self.create_widgets()
 
-def edit_task():
-    try:
-        index = listbox_tasks.curselection()[0]
-        task = tasks[index]
-        new_name = entry_task.get()
-        new_due_date = entry_due_date.get()
-        if new_name:
-            task["name"] = new_name
-            task["due_date"] = new_due_date
-            update_task_list()
-            entry_task.delete(0, tk.END)
-            entry_due_date.delete(0, tk.END)
-        else:
-            messagebox.showwarning("Warning", "Please enter a task name.")
-    except IndexError:
-        messagebox.showwarning("Warning", "Please select a task to edit.")
+    def create_widgets(self):
+        # Sidebar
+        sidebar_frame = tk.Frame(self.master, bg="lightgrey", width=200)
+        sidebar_frame.pack(fill=tk.Y, side=tk.LEFT)
 
-def delete_task():
-    try:
-        index = listbox_tasks.curselection()[0]
-        del tasks[index]
-        update_task_list()
-    except IndexError:
-        messagebox.showwarning("Warning", "Please select a task to delete.")
+        sidebar_label = tk.Label(sidebar_frame, text="To Do List", font=("Helvetica", 14), bg="lightgrey")
+        sidebar_label.pack(pady=10)
 
-def toggle_complete():
-    try:
-        index = listbox_tasks.curselection()[0]
-        task = tasks[index]
-        task["completed"] = not task["completed"]
-        update_task_list()
-    except IndexError:
-        messagebox.showwarning("Warning", "Please select a task.")
+        btn_todo = tk.Button(sidebar_frame, text="To Do List", width=20, highlightbackground="lightgrey", command=self.show_todo_list)
+        btn_todo.pack(pady=5)
 
-def update_task_list():
-    listbox_tasks.delete(0, tk.END)
-    for task in tasks:
-        status = "✔" if task["completed"] else "✖️"
-        due_date = task["due_date"] if task["due_date"] else "No due date"
-        listbox_tasks.insert(tk.END, f"{status} {task['name']} - Due: {due_date}")
+        btn_calendar = tk.Button(sidebar_frame, text="Calendar", width=20, highlightbackground="lightgrey", command=self.show_calendar)
+        btn_calendar.pack(pady=5)
 
+        # Main Content
+        self.main_frame = tk.Frame(self.master, padx=20, pady=20)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-root = tk.Tk()
-root.title("To do list App")
+        self.task_list_frame = tk.Frame(self.main_frame)
+        self.calendar_frame = tk.Frame(self.main_frame)
 
-# GUI elements
-label_title = tk.Label(root, text="To Do List", font=("Helvetica", 16))
-label_title.pack(pady=10)
+        self.show_todo_list()
 
-entry_task = tk.Entry(root, width=50)
-entry_task.pack()
+    def show_todo_list(self):
+        self.clear_main_frame()
+        self.task_list_frame.pack(fill=tk.BOTH, expand=True)
 
-entry_due_date = tk.Entry(root, width=50)
-entry_due_date.pack()
+        label_title = tk.Label(self.task_list_frame, text="Task", font=("Helvetica", 16))
+        label_title.pack(pady=10)
 
-btn_add_task = tk.Button(root, text="Add Task", width=20, command=add_task)
-btn_add_task.pack(pady=5)
+        self.task_list = tk.Frame(self.task_list_frame)
+        self.task_list.pack(anchor="w")
 
-btn_edit_task = tk.Button(root, text="Edit Task", width=20, command=edit_task)
-btn_edit_task.pack()
+        self.task_entry = tk.Entry(self.task_list_frame, width=50)
+        self.task_entry.pack()
 
-btn_delete_task = tk.Button(root, text="Delete Task", width=20, command=delete_task)
-btn_delete_task.pack()
+        self.add_button = tk.Button(self.task_list_frame, text="Add Task", command=self.add_task)
+        self.add_button.pack()
 
-btn_complete = tk.Button(root, text="Complete", width=20, command=toggle_complete)
-btn_complete.pack()
+    def show_calendar(self):
+        self.clear_main_frame()
+        self.calendar_frame.pack(fill=tk.BOTH, expand=True)
 
-listbox_tasks = tk.Listbox(root, width=50)
-listbox_tasks.pack(pady=10)
+        header_frame = tk.Frame(self.calendar_frame)
+        header_frame.pack(fill=tk.X)
 
+        self.prev_button = tk.Button(header_frame, text="<", command=self.prev_month)
+        self.prev_button.pack(side=tk.LEFT, padx=10)
 
+<<<<<<< HEAD
 root.mainloop()
 >>>>>>> 346142a (Add files via upload)
+<<<<<<< HEAD
 >>>>>>> 87a4ce3 (Add files via upload)
+=======
+=======
+        self.next_button = tk.Button(header_frame, text=">", command=self.next_month)
+        self.next_button.pack(side=tk.RIGHT, padx=10)
+
+        self.month_label = tk.Label(header_frame, text="", font=("Helvetica", 16))
+        self.month_label.pack(side=tk.LEFT, expand=True)
+
+        self.calendar_content_frame = tk.Frame(self.calendar_frame)
+        self.calendar_content_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.show_calendar_content(self.current_year, self.current_month)
+
+    def show_calendar_content(self, year, month):
+        for widget in self.calendar_content_frame.winfo_children():
+            widget.destroy()
+
+        cal = calendar.Calendar()
+        month_days = cal.monthdayscalendar(year, month)
+
+        self.month_label.config(text=f"{calendar.month_name[month]} {year}")
+
+        days_header = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        for col, day in enumerate(days_header):
+            day_label = tk.Label(self.calendar_content_frame, text=day, padx=10, pady=5)
+            day_label.grid(row=0, column=col)
+
+        for row, week in enumerate(month_days):
+            for col, day in enumerate(week):
+                day_label = tk.Label(self.calendar_content_frame, text=str(day) if day else "", padx=10, pady=5)
+                day_label.grid(row=row + 1, column=col)
+
+    def clear_main_frame(self):
+        for widget in self.main_frame.winfo_children():
+            widget.pack_forget()
+
+    def add_task(self):
+        task_text = self.task_entry.get()
+        if task_text:
+            task_frame = tk.Frame(self.task_list)
+            task_frame.pack(anchor="w", pady=5)
+
+            task_check = tk.Checkbutton(task_frame, command=lambda: self.toggle_task(task_check))
+            task_check.pack(side=tk.LEFT)
+
+            task_label = tk.Label(task_frame, text=task_text, width=40, anchor="w")
+            task_label.pack(side=tk.LEFT)
+
+            dots_label = tk.Label(task_frame, text="...", padx=10, cursor="hand2")
+            dots_label.pack(side=tk.RIGHT)
+            dots_label.bind("<Button-1>", lambda event, frame=task_frame: self.show_popup_menu(event, frame))
+
+            self.tasks.append({"text": task_text, "frame": task_frame, "check": task_check})
+            self.task_entry.delete(0, tk.END)
+
+    def toggle_task(self, task_check):
+        for task in self.tasks:
+            if task["check"] == task_check:
+                current_bg = task_check.cget("background")
+                task_check.configure(background="cyan" if not current_bg else "")
+                break
+
+    def show_popup_menu(self, event, task_frame):
+        menu = tk.Menu(self.master, tearoff=0)
+        menu.add_command(label="Edit", command=lambda frame=task_frame: self.edit_task(frame))
+        menu.add_command(label="Delete", command=lambda frame=task_frame: self.delete_task(frame))
+        menu.post(event.x_root, event.y_root)
+
+    def edit_task(self, task_frame):
+        task_label = task_frame.winfo_children()[1]
+        current_text = task_label.cget("text")
+
+        edit_window = tk.Toplevel(self.master)
+        edit_window.title("Edit Task")
+
+        edit_entry = tk.Entry(edit_window, width=40)
+        edit_entry.insert(0, current_text)
+        edit_entry.pack(padx=10, pady=10)
+
+        save_button = tk.Button(edit_window, text="Save", command=lambda: self.save_task(task_frame, edit_window, edit_entry))
+        save_button.pack()
+
+    def save_task(self, task_frame, edit_window, edit_entry):
+        new_text = edit_entry.get()
+        task_label = task_frame.winfo_children()[1]
+        task_label.config(text=new_text)
+        edit_window.destroy()
+
+    def delete_task(self, task_frame):
+        task_frame.destroy()
+
+    def prev_month(self):
+        self.current_month -= 1
+        if self.current_month == 0:
+            self.current_month = 12
+            self.current_year -= 1
+        self.show_calendar_content(self.current_year, self.current_month)
+
+    def next_month(self):
+        self.current_month += 1
+        if self.current_month == 13:
+            self.current_month = 1
+            self.current_year += 1
+        self.show_calendar_content(self.current_year, self.current_month)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("To Do List")
+    root.geometry("800x600")
+
+    app = TaskApp(root)
+
+    root.mainloop()
+>>>>>>> 0f73fac (Add pop up menu)
+>>>>>>> 3dc4cdd (Add pop up menu)
