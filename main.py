@@ -702,21 +702,27 @@ root.mainloop()
 
     def add_task(self, task_name, task_desc, window):
         if task_name:
-            task_frame = tk.Frame(self.task_list)
-            task_frame.pack(anchor="w", pady=5)
-
-            task_check = tk.Checkbutton(task_frame, command=lambda: self.toggle_task(task_check))
-            task_check.pack(side=tk.LEFT)
-
-            task_label = tk.Label(task_frame, text=f"{task_name}: {task_desc}", width=40, anchor="w")
-            task_label.pack(side=tk.LEFT)
-
-            dots_label = tk.Label(task_frame, text="...", padx=10, cursor="hand2")
-            dots_label.pack(side=tk.RIGHT)
-            dots_label.bind("<Button-1>", lambda event, frame=task_frame: self.show_popup_menu(event, frame))
-
-            self.tasks.append({"text": f"{task_name}: {task_desc}", "frame": task_frame, "check": task_check})
+            task = {"name": task_name, "desc": task_desc}
+            self.tasks.append(task)
+            self.display_task(task)
             window.destroy()
+
+    def display_task(self, task):
+        task_frame = tk.Frame(self.task_list)
+        task_frame.pack(anchor="w", pady=5)
+
+        task_check = tk.Checkbutton(task_frame, command=lambda: self.toggle_task(task_check))
+        task_check.pack(side=tk.LEFT)
+
+        task_label = tk.Label(task_frame, text=f"{task['name']}: {task['desc']}", width=40, anchor="w")
+        task_label.pack(side=tk.LEFT)
+
+        dots_label = tk.Label(task_frame, text="...", padx=10, cursor="hand2")
+        dots_label.pack(side=tk.RIGHT)
+        dots_label.bind("<Button-1>", lambda event, frame=task_frame: self.show_popup_menu(event, frame))
+
+        task["frame"] = task_frame
+        task["check"] = task_check
 
     def search_task(self):
         search_text = self.search_entry.get()
@@ -728,8 +734,8 @@ root.mainloop()
             label_title.pack(pady=10)
 
             for task in self.tasks:
-                if search_text.lower() in task["text"].lower():
-                    task_label = tk.Label(self.frames["search"], text=task["text"])
+                if search_text.lower() in task["name"].lower() or search_text.lower() in task["desc"].lower():
+                    task_label = tk.Label(self.frames["search"], text=f"{task['name']}: {task['desc']}")
                     task_label.pack(anchor="w")
 
     def toggle_task(self, task_check):
@@ -748,21 +754,35 @@ root.mainloop()
     def edit_task(self, task_frame):
         task_label = task_frame.winfo_children()[1]
         current_text = task_label.cget("text")
+        task_name, task_desc = current_text.split(": ", 1)
 
         edit_window = tk.Toplevel(self.master)
         edit_window.title("Edit Task")
 
-        edit_entry = tk.Entry(edit_window, width=40)
-        edit_entry.insert(0, current_text)
-        edit_entry.pack(padx=10, pady=10)
+        tk.Label(edit_window, text="Task Name").pack(pady=5)
+        task_name_entry = tk.Entry(edit_window, width=50)
+        task_name_entry.insert(0, task_name)
+        task_name_entry.pack(pady=5)
 
-        save_button = tk.Button(edit_window, text="Save", command=lambda: self.save_task(task_frame, edit_window, edit_entry))
-        save_button.pack()
+        tk.Label(edit_window, text="Description").pack(pady=5)
+        task_desc_entry = tk.Entry(edit_window, width=50)
+        task_desc_entry.insert(0, task_desc)
+        task_desc_entry.pack(pady=5)
 
-    def save_task(self, task_frame, edit_window, edit_entry):
-        new_text = edit_entry.get()
+        button_frame = tk.Frame(edit_window)
+        button_frame.pack(pady=10)
+
+        save_button = tk.Button(button_frame, text="Save", command=lambda: self.save_task(task_frame, edit_window, task_name_entry, task_desc_entry))
+        save_button.pack(side=tk.LEFT, padx=5)
+
+        cancel_button = tk.Button(button_frame, text="Cancel", command=edit_window.destroy)
+        cancel_button.pack(side=tk.LEFT, padx=5)
+
+    def save_task(self, task_frame, edit_window, task_name_entry, task_desc_entry):
+        new_name = task_name_entry.get()
+        new_desc = task_desc_entry.get()
         task_label = task_frame.winfo_children()[1]
-        task_label.config(text=new_text)
+        task_label.config(text=f"{new_name}: {new_desc}")
         edit_window.destroy()
 
     def delete_task(self, task_frame):
