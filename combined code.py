@@ -1,8 +1,6 @@
-
 import tkinter as tk
-from tkinter import Toplevel
+from tkinter import Toplevel, Spinbox
 from tkcalendar import Calendar
-from tkinter.ttk import Spinbox
 import calendar
 from datetime import datetime
 
@@ -10,9 +8,10 @@ class TaskApp:
     def __init__(self, master):
         self.master = master
         self.tasks = []
-        self.selected_datetime = None
         self.current_year = datetime.now().year
         self.current_month = datetime.now().month
+        self.selected_datetime = ""
+
         self.create_widgets()
 
     def create_widgets(self):
@@ -104,7 +103,7 @@ class TaskApp:
 
         select_button = tk.Button(calendar_window, text="Select", command=select_date_time)
         select_button.pack(pady=10)
-    
+
     def show_calendar(self):
         self.show_frame("calendar")
         self.clear_frame(self.frames["calendar"])
@@ -125,7 +124,7 @@ class TaskApp:
         self.calendar_content_frame.pack(fill=tk.BOTH, expand=True)
 
         self.show_calendar_content(self.current_year, self.current_month)
-    
+
     def show_add_task_popup(self):
         add_task_window = tk.Toplevel(self.master)
         add_task_window.title("Add Task")
@@ -187,7 +186,9 @@ class TaskApp:
         self.task_list = tk.Frame(self.frames["task_list"])
         self.task_list.pack(anchor="w")
 
-  
+        for task in self.tasks:
+            self.display_task(task)
+
     def show_today(self):
         self.show_frame("today")
         self.clear_frame(self.frames["today"])
@@ -384,6 +385,7 @@ class TaskApp:
         else:
             self.no_tasks_label.pack()
             self.master.after(3000, self.no_tasks_label.pack_forget)
+
     def hide_no_tasks_label(self):
         self.no_tasks_label.pack_forget()
 
