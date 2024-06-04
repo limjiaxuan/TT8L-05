@@ -1,7 +1,7 @@
 <<<<<<< HEAD
 =======
 import tkinter as tk
-from tkinter import Toplevel, Spinbox, Menu, messagebox
+from tkinter import Toplevel, Spinbox, Menu
 from tkcalendar import Calendar
 import calendar
 import sqlite3
@@ -29,9 +29,6 @@ class TaskApp:
         sidebar_frame.pack(fill=tk.Y, side=tk.LEFT)
 
         # Add buttons to sidebar
-        btn_user = tk.Button(sidebar_frame, text="User", width=20, highlightbackground="lightgrey", command=self.show_user_options)
-        btn_user.pack(pady=5)
-
         btn_add_task = tk.Button(sidebar_frame, text="Add Task", width=20, highlightbackground="lightgrey", command=self.show_add_task_popup)
         btn_add_task.pack(pady=5)
 
@@ -83,13 +80,6 @@ class TaskApp:
                 due_date TEXT
             )
         ''')
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL
-            )
-        ''')
         self.conn.commit()
 
     def load_tasks_from_db(self):
@@ -114,77 +104,6 @@ class TaskApp:
     def delete_task_from_db(self, task_id):
         self.cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
         self.conn.commit()
-
-    def show_user_options(self):
-        user_window = tk.Toplevel(self.master)
-        user_window.title("User Options")
-
-        btn_register = tk.Button(user_window, text="Register", width=20, command=self.register_user)
-        btn_register.pack(pady=10)
-
-        btn_login = tk.Button(user_window, text="Login", width=20, command=self.login_user)
-        btn_login.pack(pady=10)
-
-        btn_logout = tk.Button(user_window, text="Logout", width=20, command=self.logout_user)
-        btn_logout.pack(pady=10)
-
-    def register_user(self):
-        register_window = tk.Toplevel(self.master)
-        register_window.title("Register")
-
-        tk.Label(register_window, text="Username").pack(pady=5)
-        username_entry = tk.Entry(register_window, width=50)
-        username_entry.pack(pady=5)
-
-        tk.Label(register_window, text="Password").pack(pady=5)
-        password_entry = tk.Entry(register_window, width=50, show="*")
-        password_entry.pack(pady=5)
-
-        btn_register = tk.Button(register_window, text="Register", command=lambda: self.register(username_entry.get(), password_entry.get(), register_window))
-        btn_register.pack(pady=10)
-
-    def register(self, username, password, window):
-        if username and password:
-            try:
-                self.cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-                self.conn.commit()
-                messagebox.showinfo("Success", "User registered successfully!")
-            except sqlite3.IntegrityError:
-                messagebox.showerror("Error", "Username already exists!")
-        else:
-            messagebox.showerror("Error", "Username and password are required.")
-        window.destroy()
-
-    def login_user(self):
-        login_window = tk.Toplevel(self.master)
-        login_window.title("Login")
-
-        tk.Label(login_window, text="Username").pack(pady=5)
-        username_entry = tk.Entry(login_window, width=50)
-        username_entry.pack(pady=5)
-
-        tk.Label(login_window, text="Password").pack(pady=5)
-        password_entry = tk.Entry(login_window, width=50, show="*")
-        password_entry.pack(pady=5)
-
-        btn_login = tk.Button(login_window, text="Login", command=lambda: self.login(username_entry.get(), password_entry.get(), login_window))
-        btn_login.pack(pady=10)
-
-    def login(self, username, password, window):
-        if username and password:
-            self.cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-            user = self.cursor.fetchone()
-            if user:
-                messagebox.showinfo("Success", f"Welcome back, {username}!")
-            else:
-                messagebox.showerror("Error", "Invalid username or password.")
-        else:
-            messagebox.showerror("Error", "Username and password are required.")
-        window.destroy()
-
-    def logout_user(self):
-        messagebox.showinfo("Logout", "You have been logged out.")
-
 
     def show_todo_list(self):
         self.clear_main_frame()
@@ -498,5 +417,9 @@ if __name__ == "__main__":
 
     app = TaskApp(root)
 
+<<<<<<< HEAD
     root.mainloop()
 >>>>>>> 3cc9bfe (Add register, login and logout)
+=======
+    root.mainloop() 
+>>>>>>> 71889a8 (create database)
