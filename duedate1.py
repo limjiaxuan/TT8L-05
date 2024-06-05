@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import Toplevel, Spinbox, Menu
+from tkinter import Toplevel, Menu
 from tkcalendar import Calendar
 import calendar
 import sqlite3
@@ -149,6 +149,28 @@ class TaskApp:
         self.calendar_content_frame.pack(fill=tk.BOTH, expand=True)
 
         self.show_calendar_content(self.current_year, self.current_month)
+
+# aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+    def show_calendar_content(self, year, month):
+        self.clear_frame(self.calendar_content_frame)
+
+        cal = calendar.Calendar()
+        month_days = cal.monthdayscalendar(year, month)
+
+        self.month_label.config(text=f"{calendar.month_name[month]} {year}")
+
+        days_header = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        for col, day in enumerate(days_header):
+            day_label = tk.Label(self.calendar_content_frame, text=day, padx=10, pady=5)
+            day_label.grid(row=0, column=col)
+
+        for row, week in enumerate(month_days):
+            for col, day in enumerate(week):
+                day_label = tk.Label(self.calendar_content_frame, text=str(day) if day else "", padx=10, pady=5)
+                day_label.grid(row=row + 1, column=col)   
+
+# aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 
 
     def show_add_task_popup(self):
         add_task_window = tk.Toplevel(self.master)
@@ -385,28 +407,24 @@ class TaskApp:
         for widget in frame.winfo_children():
             widget.destroy()
 
+
     def show_calendar_content(self, year, month):
         self.clear_frame(self.calendar_content_frame)
 
+        cal = calendar.Calendar()
+        month_days = cal.monthdayscalendar(year, month)
+
         self.month_label.config(text=f"{calendar.month_name[month]} {year}")
 
-        days_frame = tk.Frame(self.calendar_content_frame)
-        days_frame.pack(fill=tk.X)
+        days_header = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        for col, day in enumerate(days_header):
+            day_label = tk.Label(self.calendar_content_frame, text=day, padx=10, pady=5)
+            day_label.grid(row=0, column=col)
 
-        for day in calendar.day_name:
-            day_label = tk.Label(days_frame, text=day[:3], width=10, borderwidth=1, relief="solid")
-            day_label.pack(side=tk.LEFT, expand=True)
-
-        cal = calendar.Calendar()
-        for week in cal.monthdayscalendar(year, month):
-            week_frame = tk.Frame(self.calendar_content_frame)
-            week_frame.pack(fill=tk.X)
-            for day in week:
-                if day == 0:
-                    day_label = tk.Label(week_frame, text="", width=10, borderwidth=1, relief="solid")
-                else:
-                    day_label = tk.Label(week_frame, text=str(day), width=10, borderwidth=1, relief="solid")
-                day_label.pack(side=tk.LEFT, expand=True)
+        for row, week in enumerate(month_days):
+            for col, day in enumerate(week):
+                day_label = tk.Label(self.calendar_content_frame, text=str(day) if day else "", padx=10, pady=5)
+                day_label.grid(row=row + 1, column=col)
 
     def prev_month(self):
         if self.current_month == 1:
