@@ -150,8 +150,6 @@ class TaskApp:
 
         self.show_calendar_content(self.current_year, self.current_month)
 
-# aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
     def show_calendar_content(self, year, month):
         self.clear_frame(self.calendar_content_frame)
 
@@ -169,8 +167,6 @@ class TaskApp:
             for col, day in enumerate(week):
                 day_label = tk.Label(self.calendar_content_frame, text=str(day) if day else "", padx=10, pady=5)
                 day_label.grid(row=row + 1, column=col)   
-
-# aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 
 
     def show_add_task_popup(self):
         add_task_window = tk.Toplevel(self.master)
@@ -305,13 +301,16 @@ class TaskApp:
         task_frame = tk.Frame(frame)
         task_frame.pack(fill=tk.X, pady=5)
 
-        check = tk.Checkbutton(task_frame, text=task["name"], font=("Helvetica", 14))
-        check.pack(side=tk.LEFT, padx=10)
+        task_text = f"{task['name']}: {task['desc']}"
         if task["due_date"]:
-            due_date_label = tk.Label(task_frame, text=f"Due: {task['due_date']}", font=("Helvetica", 12), fg="grey")
-            due_date_label.pack(side=tk.LEFT, padx=10)
+            task_text += f" (Due: {task['due_date']})"
+        else:
+            task_text += " (Due: Not set)"
 
-        # Three-dot button for edit/delete
+        check = tk.Checkbutton(task_frame, text=task_text, font=("Helvetica", 14), anchor="w")
+        check.pack(side=tk.LEFT, padx=10, fill=tk.X, expand=True)
+
+    # Three-dot button for edit/delete
         options_button = tk.Menubutton(task_frame, text="⋮", relief=tk.FLAT)
         options_button.pack(side=tk.RIGHT, padx=10)
         options_menu = Menu(options_button, tearoff=0)
