@@ -215,7 +215,11 @@ class TaskApp:
         self.clear_frame(self.frames["selected_day_tasks"])
 
         tk.Label(self.frames["selected_day_tasks"], text=f"Tasks for {selected_date}", font=("Helvetica", 16)).pack(pady=10)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 3585e10 (connect with user registration)
         back_button = tk.Button(self.frames["selected_day_tasks"], text="Back to Calendar", command=self.show_calendar)
         back_button.pack(pady=10)
         back_button.pack(side=tk.RIGHT)
@@ -339,7 +343,11 @@ class TaskApp:
         self.clear_frame(self.frames["search_results"])
 
         tk.Label(self.frames["search_results"], text="Search Results", font=("Helvetica", 16)).pack(pady=10)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 3585e10 (connect with user registration)
         back_button = tk.Button(self.frames["search_results"], text="Back", command=self.show_inbox)
         back_button.pack(pady=10)
         back_button.pack(side=tk.LEFT)
@@ -613,4 +621,8 @@ if __name__ == "__main__":
 
     app = TaskApp(root)
 
+<<<<<<< HEAD
     root.mainloop()
+=======
+    root.mainloop()
+>>>>>>> 3585e10 (connect with user registration)
