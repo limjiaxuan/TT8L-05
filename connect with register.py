@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import Toplevel, Menu, messagebox
-from tkcalendar import Calendar, DateEntry  
+from tkcalendar import Calendar, DateEntry
 import calendar
 import sqlite3
 from datetime import datetime
@@ -14,15 +14,12 @@ class TaskApp:
         self.current_year = datetime.now().year
         self.current_month = datetime.now().month
         self.selected_datetime = ""
-        self.current_user = None  # Current logged-in user
+        self.current_user = None  
 
         # Initialize the database
         self.initialize_db()
 
         self.create_widgets()
-
-        # Load tasks from the database
-        self.load_tasks_from_db()
 
         # Start checking for reminders
         self.check_reminders()
@@ -40,7 +37,6 @@ class TaskApp:
         # Add buttons to sidebar
         btn_user = tk.Button(sidebar_frame, text="User", width=20, highlightbackground="lightgrey", command=self.show_user_options)
         btn_user.pack(pady=5)
-
         btn_add_task = tk.Button(sidebar_frame, text="Add Task", width=20, highlightbackground="lightgrey", command=self.show_add_task_popup)
         btn_add_task.pack(pady=5)
 
@@ -107,6 +103,7 @@ class TaskApp:
         self.conn.commit()
 
     def load_tasks_from_db(self):
+        self.tasks.clear()
         if self.current_user:
             self.cursor.execute("SELECT * FROM tasks WHERE user_id = ?", (self.current_user["id"],))
             rows = self.cursor.fetchall()
@@ -235,7 +232,7 @@ class TaskApp:
             messagebox.showerror("Error", "Please login first.")
             return
 
-        add_task_window = tk.Toplevel(self.master)
+        add_task_window = Toplevel(self.master)
         add_task_window.title("Add Task")
 
         tk.Label(add_task_window, text="Task Name").pack(pady=5)
@@ -380,7 +377,7 @@ class TaskApp:
         check.pack(side=tk.LEFT, padx=10, fill=tk.X, expand=True)
 
         # Three-dot button for edit/delete
-        options_button = tk.Menubutton(task_frame, text="...", relief=tk.FLAT)
+        options_button = tk.Menubutton(task_frame, text="⋮", relief=tk.FLAT)
         options_button.pack(side=tk.RIGHT, padx=10)
         options_menu = Menu(options_button, tearoff=0)
         options_button.config(menu=options_menu)
@@ -604,6 +601,7 @@ class TaskApp:
             self.current_user = {"id": user[0], "username": user[1]}
             messagebox.showinfo("Success", "Login successful!")
             window.destroy()
+            self.load_tasks_from_db()
             self.show_inbox()
         else:
             messagebox.showerror("Error", "Invalid username or password.")
