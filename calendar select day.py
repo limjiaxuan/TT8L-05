@@ -1,13 +1,13 @@
 
 import tkinter as tk
 from tkinter import Toplevel, Menu, messagebox
-from tkcalendar import Calendar, DateEntry  # Import DateEntry
+from tkcalendar import Calendar, DateEntry  
 import calendar
 import sqlite3
 from datetime import datetime
 from plyer import notification
 import pystray
-from PIL import Image, ImageDraw
+
 
 
 class TaskApp:
