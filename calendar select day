@@ -1,9 +1,14 @@
+
 import tkinter as tk
-from tkinter import Toplevel, Menu
-from tkcalendar import Calendar
+from tkinter import Toplevel, Menu, messagebox
+from tkcalendar import Calendar, DateEntry
 import calendar
 import sqlite3
 from datetime import datetime
+from plyer import notification
+import pystray
+
+
 
 class TaskApp:
     def __init__(self, master):
@@ -20,6 +25,14 @@ class TaskApp:
 
         # Load tasks from the database
         self.load_tasks_from_db()
+
+        # Start checking for reminders
+        self.check_reminders()
+
+        # Minimize to system tray
+        self.window_closed = False
+        self.master.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.icon = None
 
     def create_widgets(self):
         # Sidebar
@@ -51,7 +64,9 @@ class TaskApp:
             "calendar": tk.Frame(self.main_frame),
             "today": tk.Frame(self.main_frame),
             "upcoming": tk.Frame(self.main_frame),
-            "add_task": tk.Frame(self.main_frame)
+            "add_task": tk.Frame(self.main_frame),
+            "selected_day_tasks": tk.Frame(self.main_frame),
+            "search_results": tk.Frame(self.main_frame)
         }
 
         # Search bar and button
@@ -145,6 +160,10 @@ class TaskApp:
         self.month_label = tk.Label(header_frame, text="", font=("Helvetica", 16))
         self.month_label.pack(side=tk.LEFT, expand=True)
 
+        self.date_entry = DateEntry(header_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.date_entry.pack(side=tk.LEFT, padx=10)
+        self.date_entry.bind("<<DateEntrySelected>>", self.on_date_select)
+
         self.calendar_content_frame = tk.Frame(self.frames["calendar"])
         self.calendar_content_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -165,8 +184,35 @@ class TaskApp:
 
         for row, week in enumerate(month_days):
             for col, day in enumerate(week):
-                day_label = tk.Label(self.calendar_content_frame, text=str(day) if day else "", padx=10, pady=5)
-                day_label.grid(row=row + 1, column=col)   
+                if day:
+                    day_button = tk.Button(self.calendar_content_frame, text=str(day), padx=10, pady=5, command=lambda d=day: self.show_tasks_for_day(year, month, d))
+                    day_button.grid(row=row + 1, column=col)
+                else:
+                    day_label = tk.Label(self.calendar_content_frame, text="", padx=10, pady=5)
+                    day_label.grid(row=row + 1, column=col) 
+
+    def on_date_select(self, event):
+        selected_date = self.date_entry.get_date()
+        self.show_tasks_for_day(selected_date.year, selected_date.month, selected_date.day)
+
+    def show_tasks_for_day(self, year, month, day):
+        selected_date = datetime(year, month, day).strftime("%m/%d/%y")
+        tasks_for_day = [task for task in self.tasks if task["due_date"] and datetime.strptime(task["due_date"], "%m/%d/%y %H:%M").strftime("%m/%d/%y") == selected_date]
+
+        self.show_frame("selected_day_tasks")
+        self.clear_frame(self.frames["selected_day_tasks"])
+
+        tk.Label(self.frames["selected_day_tasks"], text=f"Tasks for {selected_date}", font=("Helvetica", 16)).pack(pady=10)
+        
+        back_button = tk.Button(self.frames["selected_day_tasks"], text="Back to Calendar", command=self.show_calendar)
+        back_button.pack(pady=10)
+        back_button.pack(side=tk.RIGHT)
+
+        if tasks_for_day:
+            for task in tasks_for_day:
+                self.display_task(task, self.frames["selected_day_tasks"])
+        else:
+            tk.Label(self.frames["selected_day_tasks"], text="No tasks for this day.", font=("Helvetica", 14)).pack(pady=10)
 
     def show_add_task_popup(self):
         add_task_window = tk.Toplevel(self.master)
@@ -190,7 +236,6 @@ class TaskApp:
             calendar = Calendar(calendar_window, selectmode='day')
             calendar.pack(pady=20)
 
-
             def validate_number(P):
                 if P.isdigit() or P == "":
                     return True
@@ -208,8 +253,8 @@ class TaskApp:
 
             def set_due_date():
                 due_date = calendar.get_date()
-                hour = hour_entry.get()
-                minute = minute_entry.get()
+                hour = hour_entry.get() or "00"
+                minute = minute_entry.get() or "00"
                 due_date_time = f"{due_date} {hour}:{minute}"
                 due_date_label.config(text=due_date_time)
                 calendar_window.destroy()
@@ -251,6 +296,9 @@ class TaskApp:
         self.display_tasks(self.frames["upcoming"], tasks_upcoming, "Upcoming Tasks")
 
     def add_task(self, task_name, task_desc, due_date, add_task_window):
+        if not due_date or due_date == "Not set":
+            messagebox.showerror("Error", "Please select a due date and time.")
+            return    
         if task_name:
             task = {
                 "id": None,
@@ -270,24 +318,21 @@ class TaskApp:
         matching_tasks = [task for task in self.tasks if search_query in task["name"].lower()]
         self.show_search_results(matching_tasks)
 
-        for task in self.tasks:
-            task["frame"].pack_forget()
-
-        if matching_tasks:
-            self.no_tasks_label.pack_forget()
-            for task in matching_tasks:
-                task["frame"].pack(anchor="w", pady=5)
-        else:
-            self.no_tasks_label.pack()
-            self.master.after(3000, self.no_tasks_label.pack_forget)
-
-
     def show_search_results(self, tasks):
-        self.show_frame("task_list")
-        self.clear_frame(self.frames["task_list"])
+        self.show_frame("search_results")
+        self.clear_frame(self.frames["search_results"])
 
-        for task in tasks:
-            self.display_task(task, self.frames["task_list"])
+        tk.Label(self.frames["search_results"], text="Search Results", font=("Helvetica", 16)).pack(pady=10)
+        
+        back_button = tk.Button(self.frames["search_results"], text="Back", command=self.show_inbox)
+        back_button.pack(pady=10)
+        back_button.pack(side=tk.LEFT)
+
+        if tasks:
+            for task in tasks:
+                self.display_task(task, self.frames["search_results"])
+        else:
+            tk.Label(self.frames["search_results"], text="No matching tasks found.", font=("Helvetica", 14)).pack(pady=10)
 
     def display_tasks(self, frame, tasks, title):
         tk.Label(frame, text=title, font=("Helvetica", 16)).pack(pady=10)
@@ -310,7 +355,7 @@ class TaskApp:
         check = tk.Checkbutton(task_frame, text=task_text, font=("Helvetica", 14), anchor="w")
         check.pack(side=tk.LEFT, padx=10, fill=tk.X, expand=True)
 
-    # Three-dot button for edit/delete
+        # Three-dot button for edit/delete
         options_button = tk.Menubutton(task_frame, text="⋮", relief=tk.FLAT)
         options_button.pack(side=tk.RIGHT, padx=10)
         options_menu = Menu(options_button, tearoff=0)
@@ -345,14 +390,6 @@ class TaskApp:
             calendar = Calendar(calendar_window, selectmode='day')
             calendar.pack(pady=20)
 
-            def set_due_date():
-                due_date = calendar.get_date()
-                hour = hour_entry.get()
-                minute = minute_entry.get()
-                due_date_time = f"{due_date} {hour}:{minute}"
-                due_date_label.config(text=due_date_time)
-                calendar_window.destroy()
-
             def validate_number(P):
                 if P.isdigit() or P == "":
                     return True
@@ -368,6 +405,13 @@ class TaskApp:
             minute_entry = tk.Entry(calendar_window, width=5, validate='key', validatecommand=vcmd)
             minute_entry.pack(side='left', padx=(10, 0))
 
+            def set_due_date():
+                due_date = calendar.get_date()
+                hour = hour_entry.get() or "00"
+                minute = minute_entry.get() or "00"
+                due_date_time = f"{due_date} {hour}:{minute}"
+                due_date_label.config(text=due_date_time)
+                calendar_window.destroy()
 
             select_button = tk.Button(calendar_window, text="Select", command=set_due_date)
             select_button.pack(pady=10)
@@ -385,6 +429,9 @@ class TaskApp:
         cancel_button.pack(side=tk.LEFT, padx=5)
 
     def save_task_changes(self, task, name, desc, due_date, window):
+        if not due_date or due_date == "Not set":
+            messagebox.showerror("Error", "Please select a due date and time.")
+            return   
         task["name"] = name
         task["desc"] = desc
         task["due_date"] = due_date
@@ -406,25 +453,6 @@ class TaskApp:
         for widget in frame.winfo_children():
             widget.destroy()
 
-
-    def show_calendar_content(self, year, month):
-        self.clear_frame(self.calendar_content_frame)
-
-        cal = calendar.Calendar()
-        month_days = cal.monthdayscalendar(year, month)
-
-        self.month_label.config(text=f"{calendar.month_name[month]} {year}")
-
-        days_header = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        for col, day in enumerate(days_header):
-            day_label = tk.Label(self.calendar_content_frame, text=day, padx=10, pady=5)
-            day_label.grid(row=0, column=col)
-
-        for row, week in enumerate(month_days):
-            for col, day in enumerate(week):
-                day_label = tk.Label(self.calendar_content_frame, text=str(day) if day else "", padx=10, pady=5)
-                day_label.grid(row=row + 1, column=col)
-
     def prev_month(self):
         if self.current_month == 1:
             self.current_month = 12
@@ -441,6 +469,44 @@ class TaskApp:
             self.current_month += 1
         self.show_calendar_content(self.current_year, self.current_month)
 
+    # notification and reminder
+    def check_reminders(self):
+        now = datetime.now()
+        now_str = now.strftime("%m/%d/%y %H:%M")
+        for task in self.tasks:
+            if task["due_date"]:
+                due_date = datetime.strptime(task["due_date"], "%m/%d/%y %H:%M")
+                due_date_str = due_date.strftime("%m/%d/%y %H:%M")
+                if now_str == due_date_str:
+                    notification.notify(
+                        title="Task Reminder",
+                        message=f"{task['name']}, {task['desc']}, due at {task['due_date']}",
+                        timeout=10
+                    )
+                    self.show_reminder_popup(task)
+        self.master.after(10000, self.check_reminders) 
+
+    def on_close(self):
+        self.window_closed = True
+        self.master.withdraw()  
+        self.create_tray_icon()
+        self.check_reminders() 
+
+    def create_tray_menu(self):
+        return pystray.Menu(
+            pystray.MenuItem("Show", self.show_window),
+            pystray.MenuItem("Quit", self.quit_app)
+        )
+
+    def show_window(self, icon, item):
+        self.window_closed = False
+        self.master.deiconify()
+        self.icon.stop()
+
+    def quit_app(self, icon, item):
+        self.icon.stop()
+        self.master.destroy()
+
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("To Do List")
@@ -448,4 +514,4 @@ if __name__ == "__main__":
 
     app = TaskApp(root)
 
-    root.mainloop() 
+    root.mainloop()
