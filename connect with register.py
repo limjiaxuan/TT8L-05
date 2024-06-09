@@ -377,7 +377,7 @@ class TaskApp:
         check.pack(side=tk.LEFT, padx=10, fill=tk.X, expand=True)
 
         # Three-dot button for edit/delete
-        options_button = tk.Menubutton(task_frame, text="⋮", relief=tk.FLAT)
+        options_button = tk.Menubutton(task_frame, text="...", relief=tk.FLAT)
         options_button.pack(side=tk.RIGHT, padx=10)
         options_menu = Menu(options_button, tearoff=0)
         options_button.config(menu=options_menu)
@@ -537,8 +537,8 @@ class TaskApp:
             tk.Label(self.frames["user"], text=f"Logged in as: {self.current_user['username']}", font=("Helvetica", 14)).pack(pady=10)
             tk.Button(self.frames["user"], text="Logout", command=self.logout_user).pack(pady=10)
         else:
-            tk.Button(self.frames["user"], text="Login", command=self.show_login_popup).pack(pady=10)
             tk.Button(self.frames["user"], text="Register", command=self.show_register_popup).pack(pady=10)
+            tk.Button(self.frames["user"], text="Login", command=self.show_login_popup).pack(pady=10)
 
     def show_login_popup(self):
         login_window = Toplevel(self.master)
