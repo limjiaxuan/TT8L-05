@@ -1,10 +1,6 @@
 import tkinter as tk
 from tkinter import Toplevel, Menu, messagebox
-<<<<<<< HEAD
 from tkcalendar import Calendar, DateEntry
-=======
-from tkcalendar import Calendar, DateEntry  
->>>>>>> 61b13f2 (registration system)
 import calendar
 import sqlite3
 from datetime import datetime
@@ -18,23 +14,13 @@ class TaskApp:
         self.current_year = datetime.now().year
         self.current_month = datetime.now().month
         self.selected_datetime = ""
-<<<<<<< HEAD
         self.current_user = None  
-=======
-        self.current_user = None  # Current logged-in user
->>>>>>> 61b13f2 (registration system)
 
         # Initialize the database
         self.initialize_db()
 
         self.create_widgets()
 
-<<<<<<< HEAD
-=======
-        # Load tasks from the database
-        self.load_tasks_from_db()
-
->>>>>>> 61b13f2 (registration system)
         # Start checking for reminders
         self.check_reminders()
 
@@ -51,10 +37,6 @@ class TaskApp:
         # Add buttons to sidebar
         btn_user = tk.Button(sidebar_frame, text="User", width=20, highlightbackground="lightgrey", command=self.show_user_options)
         btn_user.pack(pady=5)
-<<<<<<< HEAD
-=======
-
->>>>>>> 61b13f2 (registration system)
         btn_add_task = tk.Button(sidebar_frame, text="Add Task", width=20, highlightbackground="lightgrey", command=self.show_add_task_popup)
         btn_add_task.pack(pady=5)
 
@@ -121,10 +103,7 @@ class TaskApp:
         self.conn.commit()
 
     def load_tasks_from_db(self):
-<<<<<<< HEAD
         self.tasks.clear()
-=======
->>>>>>> 61b13f2 (registration system)
         if self.current_user:
             self.cursor.execute("SELECT * FROM tasks WHERE user_id = ?", (self.current_user["id"],))
             rows = self.cursor.fetchall()
@@ -233,18 +212,7 @@ class TaskApp:
         self.clear_frame(self.frames["selected_day_tasks"])
 
         tk.Label(self.frames["selected_day_tasks"], text=f"Tasks for {selected_date}", font=("Helvetica", 16)).pack(pady=10)
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 3585e10 (connect with user registration)
-=======
-        
-=======
-
->>>>>>> 61b13f2 (registration system)
->>>>>>> fd67e58 (registration system)
         back_button = tk.Button(self.frames["selected_day_tasks"], text="Back to Calendar", command=self.show_calendar)
         back_button.pack(pady=10)
         back_button.pack(side=tk.RIGHT)
@@ -260,11 +228,7 @@ class TaskApp:
             messagebox.showerror("Error", "Please login first.")
             return
 
-<<<<<<< HEAD
         add_task_window = Toplevel(self.master)
-=======
-        add_task_window = tk.Toplevel(self.master)
->>>>>>> 61b13f2 (registration system)
         add_task_window.title("Add Task")
 
         tk.Label(add_task_window, text="Task Name").pack(pady=5)
@@ -372,18 +336,7 @@ class TaskApp:
         self.clear_frame(self.frames["search_results"])
 
         tk.Label(self.frames["search_results"], text="Search Results", font=("Helvetica", 16)).pack(pady=10)
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
         
->>>>>>> 3585e10 (connect with user registration)
-=======
-        
-=======
-
->>>>>>> 61b13f2 (registration system)
->>>>>>> fd67e58 (registration system)
         back_button = tk.Button(self.frames["search_results"], text="Back", command=self.show_inbox)
         back_button.pack(pady=10)
         back_button.pack(side=tk.LEFT)
@@ -576,13 +529,8 @@ class TaskApp:
             tk.Label(self.frames["user"], text=f"Logged in as: {self.current_user['username']}", font=("Helvetica", 14)).pack(pady=10)
             tk.Button(self.frames["user"], text="Logout", command=self.logout_user).pack(pady=10)
         else:
-<<<<<<< HEAD
             tk.Button(self.frames["user"], text="Register", command=self.show_register_popup).pack(pady=10)
             tk.Button(self.frames["user"], text="Login", command=self.show_login_popup).pack(pady=10)
-=======
-            tk.Button(self.frames["user"], text="Login", command=self.show_login_popup).pack(pady=10)
-            tk.Button(self.frames["user"], text="Register", command=self.show_register_popup).pack(pady=10)
->>>>>>> 61b13f2 (registration system)
 
     def show_login_popup(self):
         login_window = Toplevel(self.master)
@@ -645,10 +593,7 @@ class TaskApp:
             self.current_user = {"id": user[0], "username": user[1]}
             messagebox.showinfo("Success", "Login successful!")
             window.destroy()
-<<<<<<< HEAD
             self.load_tasks_from_db()
-=======
->>>>>>> 61b13f2 (registration system)
             self.show_inbox()
         else:
             messagebox.showerror("Error", "Invalid username or password.")
@@ -666,12 +611,4 @@ if __name__ == "__main__":
 
     app = TaskApp(root)
 
-<<<<<<< HEAD
     root.mainloop()
-=======
-    root.mainloop()
-<<<<<<< HEAD
->>>>>>> 3585e10 (connect with user registration)
-=======
->>>>>>> 61b13f2 (registration system)
->>>>>>> fd67e58 (registration system)
