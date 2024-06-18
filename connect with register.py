@@ -12,7 +12,6 @@ COLOR_THEMES = {
     "Light Theme": {"bg": "#fdf5e6", "fg": "black"},
     "Dark Theme": {"bg": "#555555", "fg": "white"},
     "Blue Theme": {"bg": "#add8e6", "fg": "black"}
-    # "Custom Theme": ("#aabbcc", "black")  # Example of a custom color using hex code
 }
 
 class TaskApp:
