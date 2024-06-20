@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import tkinter as tk
 from tkinter import Toplevel, Spinbox, Menu
 from tkcalendar import Calendar
@@ -417,16 +415,3 @@ if __name__ == "__main__":
 
     app = TaskApp(root)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    root.mainloop()
->>>>>>> 3cc9bfe (Add register, login and logout)
-=======
-    root.mainloop() 
->>>>>>> 71889a8 (create database)
-=======
-    root.mainloop() 
-=======
-    root.mainloop()
->>>>>>> 0948387 (Create database to save task when restart)
->>>>>>> fa5aabf (Create database to save task when restart)
