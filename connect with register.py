@@ -39,6 +39,10 @@ class TaskApp:
         self.master.protocol("WM_DELETE_WINDOW", self.on_close)
         self.icon = None
 
+        # Load tasks from the database and show the inbox view
+        self.load_tasks_from_db()
+        self.show_inbox()
+
     def show_theme_selection(self):
         theme_window = tk.Toplevel(self.master)
         theme_window.title("Select Theme")
@@ -168,6 +172,22 @@ class TaskApp:
 
     def delete_task_from_db(self, task_id):
         self.cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+        self.conn.commit()
+
+    def on_close(self):
+        self.window_closed = True
+        self.master.withdraw()  # Hide the main window
+        self.save_all_tasks_to_db()  # Save all tasks to the database
+        self.create_tray_icon()  # Create system tray icon
+
+    def save_all_tasks_to_db(self):
+        for task in self.tasks:
+            if task["id"] is None:
+                self.save_task_to_db(task)
+            elif task["id"] in self.deleted_tasks:
+                self.delete_task_from_db(task["id"])
+            else:
+                self.update_task_in_db(task)
         self.conn.commit()
 
     def show_todo_list(self):
