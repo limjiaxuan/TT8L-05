@@ -1,3 +1,5 @@
+import os
+import platform
 import tkinter as tk
 from tkinter import Toplevel, Menu, messagebox
 from tkcalendar import Calendar, DateEntry
@@ -5,7 +7,7 @@ import calendar
 import sqlite3
 from datetime import datetime
 from plyer import notification
-import pystray
+
 
 class TaskApp:
     def __init__(self, master):
@@ -23,11 +25,6 @@ class TaskApp:
 
         # Start checking for reminders
         self.check_reminders()
-
-        # Minimize to system tray
-        self.window_closed = False
-        self.master.protocol("WM_DELETE_WINDOW", self.on_close)
-        self.icon = None
 
     def create_widgets(self):
         # Sidebar
@@ -482,7 +479,19 @@ class TaskApp:
             self.current_month += 1
         self.show_calendar_content(self.current_year, self.current_month)
 
-    # notification and reminder
+    def macos_notify(self, title, message):
+        os.system(f'''osascript -e 'display notification "{message}" with title "{title}"' ''')
+
+    def notify(self, title, message):
+        if platform.system() == "Darwin":  # macOS
+            self.macos_notify(title, message)
+        else:  # Windows and other platforms
+            notification.notify(
+                title=title,
+                message=message,
+                timeout=10
+            )
+
     def check_reminders(self):
         now = datetime.now()
         now_str = now.strftime("%m/%d/%y %H:%M")
@@ -491,10 +500,9 @@ class TaskApp:
                 due_date = datetime.strptime(task["due_date"], "%m/%d/%y %H:%M")
                 due_date_str = due_date.strftime("%m/%d/%y %H:%M")
                 if now_str == due_date_str:
-                    notification.notify(
+                    self.notify(
                         title="Task Reminder",
-                        message=f"{task['name']}, {task['desc']}, due at {task['due_date']}",
-                        timeout=10
+                        message=f"{task['name']}, {task['desc']}, due at {task['due_date']}"
                     )
                     self.show_reminder_popup(task)
         self.master.after(10000, self.check_reminders) 
@@ -510,15 +518,6 @@ class TaskApp:
             pystray.MenuItem("Show", self.show_window),
             pystray.MenuItem("Quit", self.quit_app)
         )
-
-    def show_window(self, icon, item):
-        self.window_closed = False
-        self.master.deiconify()
-        self.icon.stop()
-
-    def quit_app(self, icon, item):
-        self.icon.stop()
-        self.master.destroy()
 
     # User management functions
     def show_user_options(self):
