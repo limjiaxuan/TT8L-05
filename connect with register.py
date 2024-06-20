@@ -7,6 +7,7 @@ import calendar
 import sqlite3
 from datetime import datetime
 from plyer import notification
+import pystray
 
 
 class TaskApp:
