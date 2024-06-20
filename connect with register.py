@@ -27,6 +27,9 @@ class TaskApp:
         # Start checking for reminders
         self.check_reminders()
 
+        # Handle window close event
+        self.master.protocol("WM_DELETE_WINDOW", self.on_close)
+
     def create_widgets(self):
         # Sidebar
         sidebar_frame = tk.Frame(self.master, bg="lightgrey", width=200)
@@ -510,15 +513,9 @@ class TaskApp:
 
     def on_close(self):
         self.window_closed = True
-        self.master.withdraw()  
-        self.create_tray_icon()
-        self.check_reminders() 
-
-    def create_tray_menu(self):
-        return pystray.Menu(
-            pystray.MenuItem("Show", self.show_window),
-            pystray.MenuItem("Quit", self.quit_app)
-        )
+        self.conn.commit()
+        self.conn.close()
+        self.master.destroy()
 
     # User management functions
     def show_user_options(self):
