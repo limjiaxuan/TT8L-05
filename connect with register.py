@@ -82,7 +82,9 @@ class TaskApp:
         self.show_inbox()
 
     def initialize_db(self):
-        self.conn = sqlite3.connect('tasks.db')
+        db_path = os.path.abspath('tasks.db')
+        print(f"Database path: {db_path}")  # Add this line to check the path
+        self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
