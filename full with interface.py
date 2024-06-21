@@ -1,3 +1,5 @@
+import os
+import platform
 import tkinter as tk
 from tkinter import Toplevel, Menu, messagebox
 from tkcalendar import Calendar, DateEntry
@@ -339,18 +341,18 @@ class TaskApp:
                 icon_window.destroy()
 
             icon_paths = [
-                "excercise.png",
-                "face-mask.png",
-                "homework.png",
-                "cleaning-products.png",
-                "laundry-machine.png",
-                "online-training.png",
-                "pets.png",
-                "piggy-bank.png",
-                "shopping-cart.png",
-                "sleep.png",
-                "study.png",
-                "medicine.png"
+                "icon/excercise.png",
+                "icon/face-mask.png",
+                "icon/homework.png",
+                "icon/cleaning-products.png",
+                "icon/laundry-machine.png",
+                "icon/online-training.png",
+                "icon/pets.png",
+                "icon/piggy-bank.png",
+                "icon/shopping-cart.png",
+                "icon/sleep.png",
+                "icon/study.png",
+                "icon/medicine.png"
             ]
 
             num_rows = (len(icon_paths) + 3 - 1) // 3  # Ceiling division for rows
@@ -560,18 +562,18 @@ class TaskApp:
                 icon_window.destroy()
 
             icon_paths = [
-                "excercise.png",
-                "face-mask.png",
-                "homework.png",
-                "cleaning-products.png",
-                "laundry-machine.png",
-                "online-training.png",
-                "pets.png",
-                "piggy-bank.png",
-                "shopping-cart.png",
-                "sleep.png",
-                "study.png",
-                "medicine.png"
+                "icon/excercise.png",
+                "icon/face-mask.png",
+                "icon/homework.png",
+                "icon/cleaning-products.png",
+                "icon/laundry-machine.png",
+                "icon/online-training.png",
+                "icon/pets.png",
+                "icon/piggy-bank.png",
+                "icon/shopping-cart.png",
+                "icon/sleep.png",
+                "icon/study.png",
+                "icon/medicine.png"
             ]
 
             for icon_path in icon_paths:
@@ -639,6 +641,19 @@ class TaskApp:
         self.show_calendar_content(self.current_year, self.current_month)
 
     # notification and reminder
+    def macos_notify(self, title, message):
+        os.system(f'''osascript -e 'display notification "{message}" with title "{title}"' ''')
+
+    def notify(self, title, message):
+        if platform.system() == "Darwin":  # macOS
+            self.macos_notify(title, message)
+        else:  # Windows and other platforms
+            notification.notify(
+                title=title,
+                message=message,
+                timeout=10
+            )
+
     def check_reminders(self):
         now = datetime.now()
         now_str = now.strftime("%m/%d/%y %H:%M")
@@ -647,33 +662,17 @@ class TaskApp:
                 due_date = datetime.strptime(task["due_date"], "%m/%d/%y %H:%M")
                 due_date_str = due_date.strftime("%m/%d/%y %H:%M")
                 if now_str == due_date_str:
-                    notification.notify(
+                    self.notify(
                         title="Task Reminder",
-                        message=f"{task['name']}, {task['desc']}, due at {task['due_date']}",
-                        timeout=10
+                        message=f"{task['name']}, {task['desc']}, due at {task['due_date']}"
                     )
                     self.show_reminder_popup(task)
         self.master.after(10000, self.check_reminders) 
 
     def on_close(self):
         self.window_closed = True
-        self.master.withdraw()  
-        self.create_tray_icon()
-        self.check_reminders() 
-
-    def create_tray_menu(self):
-        return pystray.Menu(
-            pystray.MenuItem("Show", self.show_window),
-            pystray.MenuItem("Quit", self.quit_app)
-        )
-
-    def show_window(self, icon, item):
-        self.window_closed = False
-        self.master.deiconify()
-        self.icon.stop()
-
-    def quit_app(self, icon, item):
-        self.icon.stop()
+        self.conn.commit()
+        self.conn.close()
         self.master.destroy()
 
     # User management functions
