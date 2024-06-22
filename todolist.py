@@ -7,8 +7,7 @@ import calendar
 import sqlite3
 from datetime import datetime
 from tkinter import PhotoImage, Button
-from plyer import notification
-import pystray
+from plyer import notification 
 
 COLOR_THEMES = {
     "Light Theme": {"bg": "#fdf5e6", "fg": "black"},
@@ -57,8 +56,7 @@ class TaskApp:
             theme_colors = COLOR_THEMES[theme_name]
             bg_color = theme_colors["bg"]
             fg_color = theme_colors.get("fg", "black") 
-            self.master.configure(bg=bg_color)
-            # Apply theme to existing widgets (optional)
+            self.master.configure(bg=bg_color) 
             self.apply_theme_to_widgets(self.master, bg_color, fg_color)
 
     def apply_theme_to_widgets(self, parent, bg_color, fg_color):
@@ -68,7 +66,6 @@ class TaskApp:
                 widget.configure(fg=fg_color)
             if isinstance(widget, (tk.Frame, tk.Button, tk.LabelFrame)):
                 self.apply_theme_to_widgets(widget, bg_color, fg_color)
-
 
     def create_widgets(self):
         # Sidebar
@@ -772,3 +769,4 @@ if __name__ == "__main__":
     app = TaskApp(root)
 
     root.mainloop()
+    

@@ -5,4 +5,4 @@ WONG ZHEI LE 1221108445
 
 
 Installation
-pip install tkcalendar pyler pystray
+pip install tkcalendar pyler 
