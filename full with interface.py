@@ -576,13 +576,18 @@ class TaskApp:
                 "icon/medicine.png"
             ]
 
-            for icon_path in icon_paths:
+            num_rows = (len(icon_paths) + 3 - 1) // 3  # Ceiling division for rows
+            num_columns = 3  # 3 columns
+
+            for idx, icon_path in enumerate(icon_paths):
                 icon_image = PhotoImage(file=icon_path)
                 resized_icon = icon_image.subsample(6)
                 icon_button = Button(icon_window, image=resized_icon, command=lambda path=icon_path: select_and_close(path))
                 icon_button.image = resized_icon  # Keep a reference to prevent garbage collection
-                icon_button.pack(pady=3)
-
+                row = idx // num_columns
+                col = idx % num_columns
+                icon_button.grid(row=row, column=col, padx=4, pady=4)  # Use grid layout
+                
             icon_window.grab_set()
             selected_icon = None
             icon_window.wait_window()
