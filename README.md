@@ -6,3 +6,6 @@ WONG ZHEI LE 1221108445
 
 Installation
 pip install tkcalendar pyler 
+
+Upload on itch
+https://jiaxuanlim.itch.io/todolist
